@@ -1,0 +1,41 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Displays:
+    - Alpha: 0.5
+      Class: rviz_common/Grid
+      Name: Grid
+      Value: true
+    - Class: rviz_common/RobotModel
+      Name: RobotModel
+      Value: true
+      Description Topic:
+        Value: /robot_description
+    - Class: rviz_common/LaserScan
+      Name: LiDAR Scan
+      Value: true
+      Topic:
+        Value: /scan
+      Color: 255; 0; 0
+      Size (m): 0.05
+    - Class: rviz_common/LaserScan
+      Name: Ultrasonic
+      Value: true
+      Topic:
+        Value: /ultrasonic_raw
+      Color: 0; 255; 0
+      Size (m): 0.1
+    - Class: rviz_common/Odometry
+      Name: Odometry
+      Value: true
+      Topic:
+        Value: /odom
+  Global Options:
+    Fixed Frame: odom
+  Views:
+    Current:
+      Class: rviz_common/Orbit
+      Distance: 5

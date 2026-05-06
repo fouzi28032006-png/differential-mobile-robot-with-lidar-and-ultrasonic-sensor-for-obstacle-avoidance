@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<robot name="diff_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.3 0.2 0.1"/></geometry>
+      <material name="blue"><color rgba="0 0 1 1"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.3 0.2 0.1"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" iyy="0.01" izz="0.01" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <!-- Left wheel -->
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder radius="0.04" length="0.02"/></geometry>
+      <material name="black"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.04" length="0.02"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" iyy="0.001" izz="0.001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.12 -0.03" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Right wheel -->
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder radius="0.04" length="0.02"/></geometry>
+      <material name="black"><color rgba="0 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.04" length="0.02"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" iyy="0.001" izz="0.001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.12 -0.03" rpy="-1.5707 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Caster wheel -->
+  <link name="caster_wheel">
+    <visual>
+      <geometry><sphere radius="0.02"/></geometry>
+      <material name="gray"><color rgba="0.5 0.5 0.5 1"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.02"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_wheel"/>
+    <origin xyz="-0.1 0 -0.05"/>
+  </joint>
+
+  <!-- Ultrasonic sensor link -->
+  <link name="ultrasonic_link">
+    <visual>
+      <geometry><box size="0.02 0.04 0.02"/></geometry>
+      <material name="gray"><color rgba="0.5 0.5 0.5 1"/></material>
+    </visual>
+  </link>
+
+  <joint name="ultrasonic_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="ultrasonic_link"/>
+    <origin xyz="0.16 0 0.02"/>
+  </joint>
+
+  <!-- Gazebo differential drive plugin -->
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.24</wheel_separation>
+      <wheel_radius>0.04</wheel_radius>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_link</child_frame_id>
+    </plugin>
+  </gazebo>
+
+  <!-- Ultrasonic sensor plugin (using ray sensor) -->
+  <gazebo reference="ultrasonic_link">
+    <sensor name="ultrasonic" type="gpu_lidar">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <topic>ultrasonic_raw</topic>
+      <gz_frame_id>ultrasonic_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>1</samples>
+            <resolution>1</resolution>
+            <min_angle>0</min_angle>
+            <max_angle>0</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>1</samples>
+            <resolution>1</resolution>
+            <min_angle>0</min_angle>
+            <max_angle>0</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.02</min>
+          <max>4.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo colors -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+</robot>
